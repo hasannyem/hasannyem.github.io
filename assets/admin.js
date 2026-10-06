@@ -66,9 +66,7 @@
         { k: 'email', l: 'Email', t: 'text' },
         { k: 'phone', l: 'Phone', t: 'text' },
         { k: 'address', l: 'Address', t: 'text' },
-        { k: 'linkedin', l: 'LinkedIn link', t: 'text' },
-        { k: 'scholar', l: 'Google Scholar link', t: 'text' },
-        { k: 'github', l: 'GitHub link', t: 'text' },
+        { k: 'socials', l: 'Social links', t: 'socials' },
         { k: 'contact_intro', l: 'Text above the contact form', t: 'textarea' },
         { k: 'footer_note', l: 'Footer note', t: 'text', hint: 'The year is added automatically.' }
       ]
@@ -232,6 +230,40 @@
     }
   };
 
+  var SOC_TYPES = [
+    ['linkedin', 'LinkedIn'],
+    ['scholar', 'Google Scholar'],
+    ['github', 'GitHub'],
+    ['researchgate', 'ResearchGate'],
+    ['orcid', 'ORCID'],
+    ['facebook', 'Facebook'],
+    ['instagram', 'Instagram'],
+    ['x', 'X (Twitter)'],
+    ['youtube', 'YouTube'],
+    ['telegram', 'Telegram'],
+    ['whatsapp', 'WhatsApp'],
+    ['website', 'Website'],
+    ['other', 'Other link']
+  ];
+
+  var NEWS_FIELDS = [
+    { k: 'show_in_news', l: 'Show in News', t: 'check', hint: 'Tick to list this item in the News box on the home page.' },
+    { k: 'news_date', l: 'News date', t: 'date', hint: 'Used to sort the News box. Filled in automatically when you tick the box.' },
+    { k: 'news_text', l: 'News headline (optional)', t: 'text', w: 'full', hint: 'Leave empty to use an automatic headline.' }
+  ];
+  ['research', 'publications', 'experience', 'education', 'training'].forEach(function (key) {
+    var cfg = SECTIONS[key];
+    var blank = cfg.blank;
+    cfg.fields = cfg.fields.concat(NEWS_FIELDS);
+    cfg.blank = function () {
+      var o = blank();
+      o.show_in_news = false;
+      o.news_date = '';
+      o.news_text = '';
+      return o;
+    };
+  });
+
   var NAV = [
     { k: 'dashboard', l: 'Dashboard', g: 'Overview' },
     { k: 'profile', l: 'Profile & contact', g: 'Website content' },
@@ -267,6 +299,30 @@
     var cls = 'fld' + (f.t === 'textarea' || f.t === 'lines' || f.w === 'full' ? ' full' : '');
     var hint = f.hint ? '<small>' + E(f.hint) + '</small>' : '';
     var inner;
+    if (f.t === 'check') {
+      return '<label class="fld full" style="flex-direction:row;align-items:center;gap:10px;"><input type="checkbox"' + a + (val ? ' checked' : '') + '/><b style="font-weight:500;">' + E(f.l) + '</b>' + (f.hint ? '<small>' + E(f.hint) + '</small>' : '') + '</label>';
+    }
+    if (f.t === 'socials') {
+      var rows = (Array.isArray(val) ? val : [])
+        .map(function (r, n) {
+          return (
+            '<div class="soc-row">' +
+            '<select data-soc="type" data-si="' + n + '">' +
+            SOC_TYPES.map(function (o) {
+              return '<option value="' + o[0] + '"' + (o[0] === r.type ? ' selected' : '') + '>' + E(o[1]) + '</option>';
+            }).join('') +
+            '</select>' +
+            '<input type="text" data-soc="url" data-si="' + n + '" placeholder="https://" value="' + E(r.url || '') + '"/>' +
+            '<button class="btn small danger" type="button" data-act="soc-del" data-si="' + n + '">Remove</button></div>'
+          );
+        })
+        .join('');
+      return (
+        '<div class="fld full"><span>' + E(f.l) + '</span><div class="soc-list">' + (rows || '<small>No links yet.</small>') + '</div>' +
+        '<div><button class="btn small" type="button" data-act="soc-add">+ Add link</button></div>' +
+        '<small>Shown as round icons in the card under your photo, in this order. Links must start with https://</small></div>'
+      );
+    }
     if (f.t === 'textarea' || f.t === 'lines') {
       var v = f.t === 'lines' ? (Array.isArray(val) ? val.join('\n') : '') : val || '';
       inner = '<textarea rows="' + (f.rows || (f.t === 'lines' ? 4 : 3)) + '"' + a + '>' + E(v) + '</textarea>';
@@ -289,6 +345,8 @@
 
   function readVal(el) {
     switch (el.dataset.t) {
+      case 'check':
+        return !!el.checked;
       case 'lines':
         return el.value.split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
       case 'tags':
@@ -583,6 +641,7 @@
       '<label class="fld full"><span>Text</span><textarea id="pBody" rows="18">' + E(p.body) + '</textarea>' +
       '<small>Blank line = new paragraph. ## Heading, - list item, **bold**, [text](https://link). Images are added with the button below.</small></label>' +
       '<label class="fld"><span>Visibility</span><select id="pPub"><option value="1"' + (p.published ? ' selected' : '') + '>Published</option><option value="0"' + (!p.published ? ' selected' : '') + '>Draft (hidden)</option></select></label>' +
+      '<label class="fld full" style="flex-direction:row;align-items:center;gap:10px;"><input type="checkbox" id="pNews"' + (p.show_in_news ? ' checked' : '') + '/><b style="font-weight:500;">Show in News</b><small>Lists this post in the News box on the home page.</small></label>' +
       '</div><div class="toolbar" style="margin:14px 0 0"><input type="file" id="pImgFile" accept="image/jpeg,image/png,image/webp,image/gif" hidden/>' +
       '<button class="btn" data-act="post-img" data-mode="insert">Upload image into text</button>' +
       '<button class="btn" data-act="post-img" data-mode="cover">Upload image as cover</button></div></div>';
@@ -600,7 +659,8 @@
       category: $('pCat').value,
       body: $('pBody').value,
       cover_url: $('pCover').value.trim(),
-      published: $('pPub').value === '1'
+      published: $('pPub').value === '1',
+      show_in_news: $('pNews').checked
     };
     var date = $('pDate').value;
     if (date && date !== p.date) row.created_at = new Date(date + 'T12:00:00').toISOString();
@@ -924,6 +984,14 @@
       case 'signout': return signOut();
       case 'go': return go(el.dataset.tab);
       case 'save': return saveSection(el.dataset.key);
+      case 'soc-add':
+        state.content.profile.socials.push({ type: 'facebook', url: '' });
+        markDirty('profile');
+        return renderSection('profile');
+      case 'soc-del':
+        state.content.profile.socials.splice(Number(el.dataset.si), 1);
+        markDirty('profile');
+        return renderSection('profile');
       case 'toggle':
       case 'add':
       case 'up':
@@ -934,13 +1002,13 @@
         state.filters[el.dataset.name] = el.dataset.f;
         return render();
       case 'post-new':
-        state.editingPost = { id: null, title: '', category: 'tech', body: '', cover_url: '', published: true, date: today() };
+        state.editingPost = { id: null, title: '', category: 'tech', body: '', cover_url: '', published: true, show_in_news: false, date: today() };
         state.dirty.posts = true;
         return renderPostEditor();
       case 'post-edit':
         var p = (state.postRows || []).filter(function (x) { return x.id === id; })[0];
         if (!p) return;
-        state.editingPost = { id: p.id, title: p.title, category: p.category, body: p.body, cover_url: p.cover_url, published: p.published, date: dayKey(p.created_at) };
+        state.editingPost = { id: p.id, title: p.title, category: p.category, body: p.body, cover_url: p.cover_url, published: p.published, show_in_news: !!p.show_in_news, date: dayKey(p.created_at) };
         state.dirty.posts = true;
         return renderPostEditor();
       case 'post-cancel':
@@ -976,8 +1044,13 @@
 
   function onInput(e) {
     var el = e.target;
-    if (el.id === 'pTitle' || el.id === 'pBody' || el.id === 'pCover') {
+    if (el.id === 'pTitle' || el.id === 'pBody' || el.id === 'pCover' || el.id === 'pNews') {
       state.dirty.posts = true;
+      return;
+    }
+    if (el.dataset && el.dataset.soc && state.tab === 'profile') {
+      state.content.profile.socials[Number(el.dataset.si)][el.dataset.soc] = el.value;
+      markDirty('profile');
       return;
     }
     if (!el.dataset || !el.dataset.k) return;
@@ -985,8 +1058,14 @@
     var cfg = SECTIONS[key];
     if (!cfg) return;
     var v = readVal(el);
-    if (el.dataset.i !== undefined) state.content[key][Number(el.dataset.i)][el.dataset.k] = v;
-    else state.content[key][el.dataset.k] = v;
+    var target = el.dataset.i !== undefined ? state.content[key][Number(el.dataset.i)] : state.content[key];
+    target[el.dataset.k] = v;
+    if (el.dataset.k === 'show_in_news' && v && !target.news_date) {
+      target.news_date = today();
+      var box = el.closest('.grid');
+      var di = box && box.querySelector('[data-k=news_date]');
+      if (di) di.value = target.news_date;
+    }
     markDirty(key);
   }
 
@@ -1028,6 +1107,12 @@
     state.user = session.user;
     localStorage.setItem('no_track', '1');
     state.content = clone(await S.loadContent());
+    var pr = state.content.profile || (state.content.profile = {});
+    if (!Array.isArray(pr.socials)) {
+      pr.socials = ['linkedin', 'scholar', 'github']
+        .filter(function (t) { return pr[t]; })
+        .map(function (t) { return { type: t, url: pr[t] }; });
+    }
     state.snap = clone(state.content);
     renderShell();
     go('dashboard');

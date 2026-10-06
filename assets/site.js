@@ -37,6 +37,37 @@
     home: '<path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>'
   };
 
+  var SOCIALS = {
+    linkedin: { label: 'LinkedIn', icon: ICONS.linkedin },
+    scholar: { label: 'Google Scholar', icon: ICONS.scholar },
+    github: { label: 'GitHub', icon: ICONS.github },
+    researchgate: { label: 'ResearchGate', txt: 'RG' },
+    orcid: { label: 'ORCID', txt: 'iD' },
+    facebook: { label: 'Facebook', icon: '<path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>' },
+    instagram: { label: 'Instagram', icon: '<rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>' },
+    x: { label: 'X (Twitter)', icon: '<path d="M4 4l16 16M20 4L4 20"/>' },
+    youtube: { label: 'YouTube', icon: '<path d="M22.54 6.42a2.78 2.78 0 00-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 00-1.94 2A29 29 0 001 11.75a29 29 0 00.46 5.33A2.78 2.78 0 003.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 001.94-2 29 29 0 00.46-5.25 29 29 0 00-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/>' },
+    telegram: { label: 'Telegram', icon: '<line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>' },
+    whatsapp: { label: 'WhatsApp', icon: '<path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/>' },
+    website: { label: 'Website', icon: '<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>' },
+    other: { label: 'Link', icon: '<path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>' }
+  };
+
+  function socialList(p) {
+    var list = Array.isArray(p.socials)
+      ? p.socials
+      : ['linkedin', 'scholar', 'github']
+          .filter(function (t) {
+            return p[t];
+          })
+          .map(function (t) {
+            return { type: t, url: p[t] };
+          });
+    return list.filter(function (r) {
+      return r && safeUrl(r.url);
+    });
+  }
+
   function svg(path) {
     return '<svg viewBox="0 0 24 24">' + path + '</svg>';
   }
@@ -49,20 +80,16 @@
       .join('');
   }
 
-  function heroName(name) {
-    var w = String(name || '').split(/\s+/).filter(Boolean);
-    if (w.length < 3) return E(name);
-    var first = w.slice(0, -2).join(' ');
-    return E(first) + '<br/><span>' + E(w[w.length - 2]) + '</span> ' + E(w[w.length - 1]);
-  }
-
   function renderHero(p) {
     p = p || {};
-    var social = '';
-    if (safeUrl(p.linkedin)) social += '<a href="' + E(p.linkedin) + '" class="soc-btn" title="LinkedIn" target="_blank" rel="noopener">' + svg(ICONS.linkedin) + '</a>';
-    if (safeUrl(p.scholar)) social += '<a href="' + E(p.scholar) + '" class="soc-btn" title="Google Scholar" target="_blank" rel="noopener">' + svg(ICONS.scholar) + '</a>';
-    if (safeUrl(p.github)) social += '<a href="' + E(p.github) + '" class="soc-btn" title="GitHub" target="_blank" rel="noopener">' + svg(ICONS.github) + '</a>';
-    if (p.email) social += '<a href="mailto:' + E(p.email) + '" class="soc-btn" title="Email">' + svg(ICONS.mail) + '</a>';
+    var social = socialList(p)
+      .map(function (r) {
+        var d = SOCIALS[r.type] || SOCIALS.other;
+        var inner = d.txt ? '<b>' + d.txt + '</b>' : svg(d.icon);
+        return '<a href="' + E(r.url) + '" class="soc-btn" title="' + E(d.label) + '" aria-label="' + E(d.label) + '" target="_blank" rel="noopener">' + inner + '</a>';
+      })
+      .join('');
+    if (p.email) social += '<a href="mailto:' + E(p.email) + '" class="soc-btn" title="Email" aria-label="Email">' + svg(ICONS.mail) + '</a>';
 
     var contact = '';
     if (p.email) contact += '<a href="mailto:' + E(p.email) + '">' + E(p.email) + '</a><br/>';
@@ -81,24 +108,26 @@
       .join('');
 
     $('heroMount').innerHTML =
-      '<div class="profile-card fade-up">' +
-      '<div class="profile-img-wrap"><img src="' + E(p.photo || 'ProfilePhoto.jpg') + '" alt="' + E(p.name) + '"/></div>' +
-      '<div class="profile-name">' + E(p.name) + '</div>' +
+      '<div class="hero-left fade-up">' +
+      '<div class="photo-frame"><img src="' + E(p.photo || 'ProfilePhoto.jpg') + '" alt="' + E(p.name) + '"/></div>' +
+      '<div class="info-card">' +
       '<div class="profile-title">' + E(p.title) + '</div>' +
       '<div class="profile-location">' + E(p.location) + '</div>' +
       (p.badge ? '<div class="open-badge">' + E(p.badge) + '</div>' : '') +
       '<div class="profile-social">' + social + '</div>' +
       '<div class="profile-contact">' + contact + '</div>' +
-      '</div>' +
-      '<div class="fade-up">' +
+      '</div></div>' +
+      '<div class="hero-right fade-up">' +
       '<div class="hero-eyebrow">' + E(p.eyebrow) + '</div>' +
-      '<h1 class="hero-name">' + heroName(p.name) + '</h1>' +
+      '<h1 class="hero-name">' + E(p.name) + '</h1>' +
       bio +
       '<div class="hero-tags">' + tags + '</div>' +
       '<div class="hero-btns">' +
-      (safeUrl(p.cv_url) ? '<a href="' + E(p.cv_url) + '" class="btn btn-cyan" target="_blank" rel="noopener">CV</a>' : '') +
+      (safeUrl(p.cv_url) ? '<a href="' + E(p.cv_url) + '" class="btn btn-cyan" target="_blank" rel="noopener">Download CV</a>' : '') +
       '<a href="#contact" class="btn btn-ghost">Get in Touch</a>' +
-      '</div></div>';
+      '</div>' +
+      '<div class="news-box" id="news" hidden><div class="news-head"><h2>News</h2><button type="button" class="news-more" id="newsMore" hidden></button></div><div class="news-list" id="newsMount"></div></div>' +
+      '</div>';
 
     $('navName').textContent = p.short_name || p.name || '';
     $('footName').textContent = p.name || '';
@@ -112,31 +141,102 @@
     if (p.email) info += item(ICONS.mail, '<a href="mailto:' + E(p.email) + '">' + E(p.email) + '</a>');
     if (p.phone) info += item(ICONS.phone, E(p.phone));
     if (p.address) info += item(ICONS.pin, E(p.address));
-    if (safeUrl(p.github)) info += item(ICONS.github, '<a href="' + E(p.github) + '" target="_blank" rel="noopener">' + E(p.github.replace(/^https?:\/\//, '')) + '</a>');
+    socialList(p).forEach(function (r) {
+      var d = SOCIALS[r.type] || SOCIALS.other;
+      if (d.txt) return;
+      info += item(d.icon, '<a href="' + E(r.url) + '" target="_blank" rel="noopener">' + E(d.label) + '</a>');
+    });
     $('contactInfo').innerHTML = info;
   }
 
-  function renderNews(items) {
-    items = arr(items);
-    var sec = $('news');
+  var NEWS_SHOWN = 5;
+
+  function newsItems(c, posts) {
+    var out = [];
+    arr(c.news).forEach(function (n) {
+      out.push({ date: n.date, text: n.text, link: n.link, label: n.link_label || 'Read more', ext: true });
+    });
+    function from(list, tag, anchor, make) {
+      arr(list).forEach(function (it) {
+        if (!it || !it.show_in_news) return;
+        out.push({ date: it.news_date, text: it.news_text || make(it), link: anchor, tag: tag });
+      });
+    }
+    from(c.publications, 'Publication', '#publications', function (i) {
+      return 'Paper (' + (STATUS[i.status] || 'Submitted') + '): ' + i.title;
+    });
+    from(c.research, 'Research', '#research', function (i) {
+      return i.role + (i.topic ? ' — ' + i.topic : '');
+    });
+    from(c.experience, 'Experience', '#experience', function (i) {
+      return i.role + (i.company ? ', ' + i.company : '');
+    });
+    from(c.education, 'Education', '#education', function (i) {
+      return i.degree + (i.school ? ', ' + i.school : '');
+    });
+    from(c.training, 'Training', '#training', function (i) {
+      return i.title + (i.org ? ', ' + i.org : '');
+    });
+    arr(posts).forEach(function (p) {
+      if (!p.show_in_news) return;
+      out.push({ date: p.created_at, text: p.title, link: 'blog.html?post=' + encodeURIComponent(p.id), tag: CAT[p.category] || 'Blog' });
+    });
+    out = out.filter(function (n) {
+      return n.text;
+    });
+    out.forEach(function (n, i) {
+      n.d = String(n.date || '').slice(0, 10);
+      n.o = i;
+    });
+    out.sort(function (a, b) {
+      return a.d === b.d ? a.o - b.o : a.d < b.d ? 1 : -1;
+    });
+    return out;
+  }
+
+  function renderNews(c, posts) {
+    var items = newsItems(c, posts);
+    var box = $('news');
+    var links = document.querySelectorAll('[data-section="news"]');
     if (!items.length) {
-      sec.hidden = true;
-      document.querySelectorAll('[data-section="news"]').forEach(function (a) {
+      box.hidden = true;
+      links.forEach(function (a) {
         a.hidden = true;
       });
       return;
     }
-    sec.hidden = false;
-    document.querySelectorAll('[data-section="news"]').forEach(function (a) {
+    box.hidden = false;
+    links.forEach(function (a) {
       a.hidden = false;
     });
-    $('newsMount').innerHTML = items
-      .slice(0, 8)
-      .map(function (n) {
-        var link = ext(n.link) ? '<a href="' + E(n.link) + '" target="_blank" rel="noopener">' + E(n.link_label || 'Read more') + '</a>' : '';
-        return '<div class="news-item fade-up"><div class="news-date">' + S.fmtDate(n.date) + '</div><div class="news-text">' + E(n.text) + link + '</div></div>';
-      })
-      .join('');
+    var all = false;
+    var more = $('newsMore');
+    function draw() {
+      $('newsMount').innerHTML = (all ? items : items.slice(0, NEWS_SHOWN))
+        .map(function (n) {
+          var text = E(n.text);
+          if (n.ext) {
+            if (ext(n.link)) text += '<a class="news-link" href="' + E(n.link) + '" target="_blank" rel="noopener">' + E(n.label) + '</a>';
+          } else if (n.link) {
+            text = '<a href="' + E(n.link) + '">' + text + '</a>';
+          }
+          return (
+            '<div class="news-item"><div class="news-date">' + (n.d ? S.fmtDate(n.d) : '') + '</div>' +
+            '<div class="news-text">' + text + '</div>' +
+            (n.tag ? '<span class="news-tag">' + E(n.tag) + '</span>' : '') + '</div>'
+          );
+        })
+        .join('');
+      if (items.length > NEWS_SHOWN) {
+        more.hidden = false;
+        more.textContent = all ? 'Show less' : 'Show all (' + items.length + ')';
+      }
+    }
+    more.addEventListener('click', function () {
+      all = !all;
+      draw();
+    });
+    draw();
   }
 
   function renderResearch(items) {
@@ -355,7 +455,7 @@
 
     window.__contactEmail = (c.profile && c.profile.email) || '';
     renderHero(c.profile);
-    renderNews(c.news);
+    renderNews(c, posts);
     renderResearch(c.research);
     renderInterests(c.interests);
     renderPubs(c.publications);
