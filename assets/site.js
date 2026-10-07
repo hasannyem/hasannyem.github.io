@@ -29,6 +29,7 @@
     github: '<path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/>',
     mail: '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>',
     phone: '<path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.63A2 2 0 012 0h3a2 2 0 012 1.72c.128.96.341 1.902.62 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.28 1.849.493 2.81.62A2 2 0 0122 14.92z"/>',
+    download: '<path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
     pin: '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>'
   };
   var EDU_ICONS = {
@@ -107,29 +108,45 @@
       })
       .join('');
 
+    var disp = p.display_name || String(p.name || '').replace(/^md\.?\s+/i, '');
+    var words = String(disp).trim().split(/\s+/);
+    var headHtml = '<span class="accent">' + E(words[0] || '') + '</span>' + (words.length > 1 ? ' ' + E(words.slice(1).join(' ')) : '');
+    var city = String(p.location || '');
+
     $('heroMount').innerHTML =
       '<div class="hero-left fade-up">' +
+      '<div class="photo-wrap"><div class="photo-shape"></div>' +
       '<div class="photo-frame"><img src="' + E(p.photo || 'ProfilePhoto.jpg') + '" alt="' + E(p.name) + '"/></div>' +
+      (city ? '<div class="photo-badge">' + E(city) + '</div>' : '') + '</div>' +
       '<div class="info-card">' +
       '<div class="profile-title">' + E(p.title) + '</div>' +
-      '<div class="profile-location">' + E(p.location) + '</div>' +
       (p.badge ? '<div class="open-badge">' + E(p.badge) + '</div>' : '') +
       '<div class="profile-social">' + social + '</div>' +
       '<div class="profile-contact">' + contact + '</div>' +
       '</div></div>' +
       '<div class="hero-right fade-up">' +
-      '<div class="hero-eyebrow">' + E(p.eyebrow) + '</div>' +
-      '<h1 class="hero-name">' + E(p.name) + '</h1>' +
+      (p.eyebrow ? '<div class="hero-eyebrow">' + E(p.eyebrow) + '</div>' : '') +
+      '<div class="hero-hi">Hi, I’m</div>' +
+      '<h1 class="hero-name" aria-label="' + E(disp) + '">' + headHtml + '</h1>' +
+      (p.role_line ? '<div class="hero-role">' + E(p.role_line) + '</div>' : '') +
       bio +
       '<div class="hero-tags">' + tags + '</div>' +
       '<div class="hero-btns">' +
-      (safeUrl(p.cv_url) ? '<a href="' + E(p.cv_url) + '" class="btn btn-cyan" target="_blank" rel="noopener">Download CV</a>' : '') +
-      '<a href="#contact" class="btn btn-ghost">Get in Touch</a>' +
+      '<a href="#contact" class="btn btn-cyan">Get In Touch <span aria-hidden="true">→</span></a>' +
+      (safeUrl(p.cv_url) ? '<a href="' + E(p.cv_url) + '" class="btn btn-ghost" target="_blank" rel="noopener">' + svg(ICONS.download) + 'Download CV</a>' : '') +
       '</div>' +
       '<div class="news-box" id="news" hidden><div class="news-head"><h2>News</h2><button type="button" class="news-more" id="newsMore" hidden></button></div><div class="news-list" id="newsMount"></div></div>' +
       '</div>';
 
-    $('navName').textContent = p.short_name || p.name || '';
+    var nav = $('navName');
+    var logo = String(p.logo || '').trim();
+    if (logo && (/^https:\/\//i.test(logo) || /^[\w\-][\w\-./]*$/.test(logo)) && logo.indexOf('..') < 0) {
+      nav.innerHTML = '<img class="nav-logo" src="' + E(logo) + '" alt="' + E(p.short_name || p.name || 'Home') + '"/>';
+      nav.classList.add('has-logo');
+    } else {
+      nav.textContent = p.short_name || p.name || '';
+      nav.classList.remove('has-logo');
+    }
     $('footName').textContent = p.name || '';
     $('footNote').textContent = (p.footer_note ? p.footer_note + ' · ' : '') + new Date().getFullYear();
     if (p.name) document.title = p.name + ' — ' + (p.title || '');

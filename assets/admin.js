@@ -53,9 +53,12 @@
       kind: 'object',
       help: 'Your name, photo, bio and contact details. They appear in the hero card, the contact section and the footer.',
       fields: [
-        { k: 'name', l: 'Full name', t: 'text' },
-        { k: 'short_name', l: 'Short name (top menu)', t: 'text' },
-        { k: 'title', l: 'Title under your name', t: 'text' },
+        { k: 'name', l: 'Full name', t: 'text', hint: 'Used for the page title and the footer.' },
+        { k: 'display_name', l: 'Name in the big heading', t: 'text', hint: 'The first word is shown in the accent colour. Leave empty to use the full name without "Md".' },
+        { k: 'role_line', l: 'Role line under the heading', t: 'text', hint: 'For example: AI & Machine Learning Engineer. Leave empty to hide.' },
+        { k: 'short_name', l: 'Short name (top menu)', t: 'text', hint: 'Shown as text when no logo is set.' },
+        { k: 'logo', l: 'Logo (top left)', t: 'text', hint: 'File name in the repository (logo.png) or a full https link. Leave empty to show the short name as text.' },
+        { k: 'title', l: 'Title in the info card', t: 'text' },
         { k: 'eyebrow', l: 'Small line above the heading', t: 'text' },
         { k: 'location', l: 'Location', t: 'text' },
         { k: 'badge', l: 'Badge text', t: 'text', hint: 'For example: Open to MS / PhD Positions. Leave empty to hide.' },
@@ -1113,6 +1116,9 @@
         .filter(function (t) { return pr[t]; })
         .map(function (t) { return { type: t, url: pr[t] }; });
     }
+    if (pr.display_name === undefined) pr.display_name = String(pr.name || '').replace(/^md\.?\s+/i, '');
+    if (pr.role_line === undefined) pr.role_line = 'AI & Machine Learning Engineer';
+    if (pr.logo === undefined) pr.logo = '';
     state.snap = clone(state.content);
     renderShell();
     go('dashboard');
