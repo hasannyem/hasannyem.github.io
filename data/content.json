@@ -8,10 +8,16 @@
     "badge": "Open to MS / PhD Positions",
     "photo": "ProfilePhoto.jpg",
     "bio": [
-      "Hi Everyone, I am an AI & Machine Learning Engineer with a strong foundation in Python, Data Structures, Algorithms, and Statistics. I focus on building intelligent systems that solve real-world problems while continuously strengthening my core computer science fundamentals.",
+      "I am an AI & Machine Learning Engineer with a strong foundation in Python, Data Structures, Algorithms, and Statistics. I focus on building intelligent systems that solve real-world problems while continuously strengthening my core computer science fundamentals.",
       "I have hands-on experience in Machine Learning, NLP, Deep Learning, and Computer Vision using Scikit-learn, TensorFlow, OpenCV, Pandas, and NumPy. From data preprocessing and feature engineering to model training and deployment, I enjoy working on complete end-to-end AI solutions."
     ],
-    "tags": ["GNN Security", "Healthcare AI", "Federated Learning", "NLP & Transformers", "Computer Vision"],
+    "tags": [
+      "GNN Security",
+      "Healthcare AI",
+      "Federated Learning",
+      "NLP & Transformers",
+      "Computer Vision"
+    ],
     "cv_url": "https://drive.google.com/file/d/1nGpj2tLpSjaiv2CaaVQXqfW9qbX7imsX/view?usp=sharing",
     "email": "nyemhasan.diu@gmail.com",
     "phone": "+880 1824039747",
@@ -20,7 +26,10 @@
     "scholar": "https://scholar.google.com/citations?hl=en&user=Sbu4y_sAAAAJ&view_op=list_works&authuser=1&gmla=AH8HC4wJJ6Vm_LhU_nUtv6cHvPGHuOduHOLNzxXun6zAFQlYaBYoTwjpxg_PEACd8SkYj_9o-zu73h7CjY2q7ZJ0",
     "github": "https://github.com/hasannyem",
     "contact_intro": "I am actively seeking MS and PhD opportunities in machine learning, AI security, and healthcare AI. If you are a faculty member or recruiter, I would love to connect and discuss potential collaborations.",
-    "footer_note": "Actively seeking MS / PhD opportunities worldwide"
+    "footer_note": "Actively seeking MS / PhD opportunities worldwide",
+    "display_name": "Nyem Hasan Bhuiyan",
+    "role_line": "AI & Machine Learning Engineer",
+    "logo": ""
   },
   "news": [],
   "research": [
@@ -74,18 +83,54 @@
     }
   ],
   "interests": [
-    { "icon": "🤖", "name": "Machine Learning" },
-    { "icon": "🧠", "name": "Deep Learning" },
-    { "icon": "🔒", "name": "ML Security & Robustness" },
-    { "icon": "🏥", "name": "Healthcare AI" },
-    { "icon": "💬", "name": "NLP" },
-    { "icon": "👁️", "name": "Computer Vision" },
-    { "icon": "🔗", "name": "Graph Neural Networks" },
-    { "icon": "🛡️", "name": "Privacy-Preserving ML" },
-    { "icon": "🌐", "name": "Federated Learning" },
-    { "icon": "📡", "name": "Internet of Things" },
-    { "icon": "🖥️", "name": "Human-Computer Interaction" },
-    { "icon": "📊", "name": "Data Science" }
+    {
+      "icon": "🤖",
+      "name": "Machine Learning"
+    },
+    {
+      "icon": "🧠",
+      "name": "Deep Learning"
+    },
+    {
+      "icon": "🔒",
+      "name": "ML Security & Robustness"
+    },
+    {
+      "icon": "🏥",
+      "name": "Healthcare AI"
+    },
+    {
+      "icon": "💬",
+      "name": "NLP"
+    },
+    {
+      "icon": "👁️",
+      "name": "Computer Vision"
+    },
+    {
+      "icon": "🔗",
+      "name": "Graph Neural Networks"
+    },
+    {
+      "icon": "🛡️",
+      "name": "Privacy-Preserving ML"
+    },
+    {
+      "icon": "🌐",
+      "name": "Federated Learning"
+    },
+    {
+      "icon": "📡",
+      "name": "Internet of Things"
+    },
+    {
+      "icon": "🖥️",
+      "name": "Human-Computer Interaction"
+    },
+    {
+      "icon": "📊",
+      "name": "Data Science"
+    }
   ],
   "publications": [
     {
@@ -212,11 +257,35 @@
   "skills": [
     {
       "title": "Languages & Tools",
-      "items": ["*Python", "*PyTorch", "*TensorFlow", "C++", "C#", "HTML / CSS", "jQuery", "Git", "Streamlit", "MS SQL Server", "Visual Studio"]
+      "items": [
+        "*Python",
+        "*PyTorch",
+        "*TensorFlow",
+        "C++",
+        "C#",
+        "HTML / CSS",
+        "jQuery",
+        "Git",
+        "Streamlit",
+        "MS SQL Server",
+        "Visual Studio"
+      ]
     },
     {
       "title": "Libraries & Frameworks",
-      "items": ["*PyTorch Geometric", "*Scikit-learn", "Keras", "LightGBM", "Transformers", "OpenCV", "Pandas", "NumPy", "NLTK", "SHAP / LIME", "Grad-CAM"]
+      "items": [
+        "*PyTorch Geometric",
+        "*Scikit-learn",
+        "Keras",
+        "LightGBM",
+        "Transformers",
+        "OpenCV",
+        "Pandas",
+        "NumPy",
+        "NLTK",
+        "SHAP / LIME",
+        "Grad-CAM"
+      ]
     }
   ],
   "experience": [
@@ -228,7 +297,10 @@
         "Managed and preprocessed large-scale security system datasets, supporting ML pipelines and analytics workflows",
         "Built monitoring dashboards and delivered structured logs to data teams for model development"
       ],
-      "tags": ["ML Pipelines", "Data Analytics"]
+      "tags": [
+        "ML Pipelines",
+        "Data Analytics"
+      ]
     },
     {
       "period": "January 2021 – December 2023",
@@ -239,7 +311,11 @@
         "Contributed to product development cycles and technical documentation",
         "Collaborated with cross-functional teams on project delivery"
       ],
-      "tags": ["Full Stack", "C#", "SQL"]
+      "tags": [
+        "Full Stack",
+        "C#",
+        "SQL"
+      ]
     },
     {
       "period": "January 2019 – March 2020",
@@ -249,7 +325,10 @@
         "Supported IT operations and system maintenance tasks",
         "Assisted with data management, reporting, and system monitoring"
       ],
-      "tags": ["IT Operations", "Data Management"]
+      "tags": [
+        "IT Operations",
+        "Data Management"
+      ]
     },
     {
       "period": "June 2014 – December 2018",
@@ -260,7 +339,11 @@
         "Prepared question papers and reviewed answer scripts with constructive feedback",
         "Mentored students and tracked academic progress through regular assessments"
       ],
-      "tags": ["Mathematics", "ICT", "Mentoring"]
+      "tags": [
+        "Mathematics",
+        "ICT",
+        "Mentoring"
+      ]
     }
   ],
   "education": [
